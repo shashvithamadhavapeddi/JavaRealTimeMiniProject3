@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create New Post • ExcelR Blog</title>
+
+    <!-- Modern font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CKEditor 5 - Classic build (stable version as of early 2026) -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/43.0.0/classic/ckeditor.js"></script>
+
+    <style>
+        :root {
+            --bg: #f9fafb;
+            --card-bg: #ffffff;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --border: #e5e7eb;
+            --shadow-sm: 0 6px 24px -4px rgba(99, 102, 241, 0.1);
+            --shadow-md: 0 12px 36px -8px rgba(99, 102, 241, 0.15);
+            --radius: 1.25rem;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow-sm: 0 6px 24px -4px rgba(0,0,0,0.45);
+            --shadow-md: 0 12px 36px -8px rgba(0,0,0,0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        .create-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto 4rem;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 2.8rem;
+            letter-spacing: -0.03em;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            color: var(--text);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 0.875rem;
+            font-size: 1.05rem;
+            background: var(--bg);
+            color: var(--text);
+            transition: all 0.25s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+        }
+
+        /* CKEditor - Clean & Modern Integration */
+        .ck-editor__editable_inline {
+            min-height: 460px;
+            border: 1px solid var(--border) !important;
+            border-radius: 0.875rem !important;
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            padding: 1.4rem !important;
+            font-size: 1.08rem !important;
+            line-height: 1.75 !important;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .ck-editor__editable_inline:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14) !important;
+        }
+
+        .ck.ck-toolbar {
+            border-radius: 0.875rem 0.875rem 0 0 !important;
+            border: 1px solid var(--border) !important;
+            border-bottom: none !important;
+            background: rgba(99,102,241,0.05) !important;
+        }
+
+        .ck.ck-toolbar .ck-button.ck-button_on {
+            background: rgba(99,102,241,0.15) !important;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 0.875rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(99,102,241,0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(99,102,241,0.38);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        .back-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .create-container {
+                padding: 2.5rem 1.8rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="create-container">
+        <h1>Create New Post</h1>
+
+        <form th:action="@{/create}" th:object="${post}" method="post" id="createPostForm">
+            <div class="form-group">
+                <label for="title">Post Title</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="Enter an engaging title..." required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Short Description</label>
+                <input type="text" id="description" th:field="*{description}"
+                       placeholder="Brief summary for previews (max 160 characters)" maxlength="160" required />
+            </div>
+
+            <div class="form-group">
+                <label for="content">Main Content</label>
+                <textarea id="content" th:field="*{content}" placeholder="Start writing your amazing post here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">Publish Post</button>
+        </form>
+
+        <div class="back-link">
+            <a th:href="@{/dashboard}">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        let editorInstance;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                        'outdent', 'indent', '|',
+                        'blockQuote', 'codeBlock', 'imageUpload', '|',
+                        'undo', 'redo'
+                    ],
+                    placeholder: "Start writing your amazing post... (you can add images, code blocks, quotes, lists, etc.)",
+                    height: 480
+                })
+                .then(editor => {
+                    editorInstance = editor;
+                })
+                .catch(error => {
+                    console.error("CKEditor failed to initialize:", error);
+                });
+
+            // Ensure content is synced and validated before submit
+            document.getElementById('createPostForm').addEventListener('submit', function (e) {
+                if (editorInstance) {
+                    const contentData = editorInstance.getData().trim();
+                    if (!contentData) {
+                        alert("Please add some content to your post before publishing.");
+                        e.preventDefault();
+                        return;
+                    }
+                    document.querySelector('#content').value = contentData;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
